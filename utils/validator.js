@@ -38,10 +38,18 @@ const saveValidator = (req) => {
     return true;
 }
 
+const dashboardValidator = (req) => {
+    const {doctor} = req.body;
+    if(!doctor)
+        return false;
+    return true;
+}
+
 module.exports = {
     inputValidator,
     bookingValidator,
     historyValidator,
     ratingValidator,
-    saveValidator
+    saveValidator,
+    dashboardValidator
 }

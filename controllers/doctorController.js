@@ -121,14 +121,8 @@ const  dashboard = async (req, res) => {
       return res.status(400).json({message: "input fields can't be empty"});
     
     const dailyAppointments = await dailyPatientList(doctor);
-    if(dailyAppointments.message)
-      return res.status(400).json({message: dailyAppointments.message});
     const weeklyAppointments = await weeklyPerformance(doctor);
-    if(weeklyAppointments.message)
-      return res.status(400).json({message: weeklyAppointments.message});
     const experience = await experianceReport(doctor);
-    if(experience.message)
-      return res.status(400).json({message: experience.message});
     const dashboardData = {
       dailyAppointments,
       weeklyAppointments,
@@ -200,13 +194,13 @@ const weeklyPerformance = async (doctorName) => {
 
 const experianceReport = async (doctorName) => {
   try {
-    const appointments = await appointmentModel.find({ name: doctorName});
+    const appointments = await appointmentModel.find({ doctor: doctorName});
 
     if (!appointments || appointments.length === 0) 
       return { message: 'No appointments found for this month' };
 
     const experiance = appointments.reduce((acc, appointment) => {
-      acc(appointment.case) = (acc(appointment.case) || 0) + 1;
+      acc[appointment.case] = (acc[appointment.case] || 0) + 1;
       return acc;
     }, {});
     

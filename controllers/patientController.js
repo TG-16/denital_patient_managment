@@ -71,18 +71,18 @@ const login = async (req, res) => {
 }
 
 // Get patient by ID
-const getPatient = async (req, res) => {
-  try {
-    const patient = await Patient.findById(req.params.id);
-    if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-    res.status(200).json(patient);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
+// const getPatient = async (req, res) => {
+//   try {
+//     const patient = await Patient.findById(req.params.id);
+//     if (!patient) {
+//       return res.status(404).json({ message: 'Patient not found' });
+//     }
+//     res.status(200).json(patient);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error', error });
+//   }
+// };
 
 const book = async (req,res) => {
   const {patient, doctor, appointmentDate, reson} = req.body;
