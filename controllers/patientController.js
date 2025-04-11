@@ -90,6 +90,11 @@ const book = async (req,res) => {
     const valid = validator.bookingValidator(req);
     if(!valid)
       return res.status(400).json({message: "input fields can't be empty"});
+
+    const doctorAvailability = await doctorModel.findOne({name: doctor});
+    if(doctorAvailability.todaysAvailability >= 42)
+      return res.status(400).json({message: "Doctor is not available today"});
+
     const appointment = new appointmentModel({
       patient,
       doctor,
@@ -98,6 +103,9 @@ const book = async (req,res) => {
     });
 
     await appointment.save();
+
+    doctorAvailability.todaysAvailability += 1;
+    await doctorAvailability.save();
 
     res.status(201).json({ message: 'Booked successfully!' });
   } catch (error) {
@@ -120,7 +128,10 @@ const cancel = async (req,res) => {
 
     if(!appointment)
       return res.status(404).json({message: "Appointment not found"});
-
+    
+    const doctorAvailability = await doctorModel.findOne({name: doctor});
+    doctorAvailability.todaysAvailability -= 1;
+    await doctorAvailability.save();
     res.status(200).json({ message: 'Canceled successfully!' });
   } catch (error) {
     console.log(error);

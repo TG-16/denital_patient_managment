@@ -34,11 +34,6 @@ const doctorSchema = new mongoose.Schema({
     enum: ['male', 'female'],
     required: false
   },
-  yearsOfExperience: {
-    type: Number,
-    min: [0, 'Experience must be 0 or more'],
-    default: 0
-  },
   ratings: {
     type: Array,
     default: []
@@ -46,6 +41,11 @@ const doctorSchema = new mongoose.Schema({
   averageRating: {
     type: Number,
     default: 0
+  },
+  todaysAvailability: {
+    type: Number,
+    default: 0,
+    max: 42
   },
 
   createdAt: {

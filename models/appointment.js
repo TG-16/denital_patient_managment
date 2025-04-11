@@ -22,6 +22,10 @@ const appointmentSchema = new mongoose.Schema({
     type: String,  // Prescription details provided by the doctor
     default: ''
   },
+  case: {
+    type: String,  // Medical case details
+    default: 'other'
+  },
   rating: {
     type: Number,  // Rating given by the patient after the appointment
     min: 1,

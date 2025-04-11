@@ -70,28 +70,6 @@ const login = async (req, res) => {
   }
 }
 
-
-//go together withe dashboard requests
-const todaysAppointments = async (req, res) => {
-  try {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-    const appointments = await appointmentModel.find({
-      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-    });
-
-    if (!appointments || appointments.length === 0) 
-      return res.status(404).json({ message: 'No appointments found for today' });
-
-    res.status(200).json(appointments);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
 const search = async (req, res) => {
   const {patientName} = req.body;
   try {
@@ -135,9 +113,119 @@ const savHistory = async (req, res) => {
   }
 }
 
+const  dashboard = async (req, res) => {
+  const {doctor} = req.body;
+  try {
+    const valid = validator.dashboardValidator(req);
+    if(!valid)
+      return res.status(400).json({message: "input fields can't be empty"});
+    
+    const dailyAppointments = await dailyPatientList(doctor);
+    if(dailyAppointments.message)
+      return res.status(400).json({message: dailyAppointments.message});
+    const weeklyAppointments = await weeklyPerformance(doctor);
+    if(weeklyAppointments.message)
+      return res.status(400).json({message: weeklyAppointments.message});
+    const experience = await experianceReport(doctor);
+    if(experience.message)
+      return res.status(400).json({message: experience.message});
+    const dashboardData = {
+      dailyAppointments,
+      weeklyAppointments,
+      experience
+    };
+    res.status(200).json(dashboardData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+}
+
+const dailyPatientList = async (doctorName) => {
+  try {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const appointments = await appointmentModel.find({
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (!appointments || appointments.length === 0) 
+      return { message: 'No appointments found for today' };
+
+    const filteredAppointments = appointments.filter(appointment => appointment.doctor === doctorName);
+    if (filteredAppointments.length === 0) 
+      return { message: 'No appointments found for you doctor today' };
+
+    return filteredAppointments;
+  } catch (error) {
+    console.error(error);
+    return { message: 'Server error', error };
+  }
+}
+
+const weeklyPerformance = async (doctorName) => {
+  try {
+    const today = new Date();
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const endOfWeek = new Date(today.setDate(today.getDate() + 6 - today.getDay()));
+
+    const appointments = await appointmentModel.find({
+      appointmentDate: { $gte: startOfWeek, $lte: endOfWeek },
+    });
+
+    if (!appointments || appointments.length === 0) 
+      return { message: 'No appointments found for this week' };
+
+    const filteredAppointments = appointments.filter(appointment => appointment.doctor === doctorName);
+    if (filteredAppointments.length === 0)
+      return { message: 'No appointments found for you doctor this week' };
+
+    let totalRating = 0;
+    let count = 0;
+    filteredAppointments.forEach(appointment => {
+      if (appointment.rating) {
+        totalRating += appointment.rating;
+        count++;
+      }
+    });
+    const averageRating = count > 0 ? (totalRating / count).toFixed(2) : 0;
+    return { filteredAppointments, averageRating };
+  } catch (error) {
+    console.error(error);
+    return { message: 'Server error', error };
+  }
+}
+
+const experianceReport = async (doctorName) => {
+  try {
+    const appointments = await appointmentModel.find({ name: doctorName});
+
+    if (!appointments || appointments.length === 0) 
+      return { message: 'No appointments found for this month' };
+
+    const experiance = appointments.reduce((acc, appointment) => {
+      acc(appointment.case) = (acc(appointment.case) || 0) + 1;
+      return acc;
+    }, {});
+    
+    return experiance;
+  }
+  catch (error) {
+    console.error(error);
+    return { message: 'Server error', error };
+  }
+}
+
+   
+
+
+
 module.exports = {
   registerDoctor,
   login,
   search,
-  savHistory
+  savHistory,
+  dashboard,
 };
