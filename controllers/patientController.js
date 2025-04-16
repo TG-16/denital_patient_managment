@@ -5,12 +5,11 @@ const jwt = require('jsonwebtoken');
 const appointmentModel = require("../models/appointment");
 const doctorModel = require("../models/doctor");
 
-// Register a new patient
 const registerPatient = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // Check if the patient already exists
+  
     let existingPatient;
     if(!email)
       existingPatient = await patientModel.findOne({ name });
@@ -20,17 +19,14 @@ const registerPatient = async (req, res) => {
       return res.status(400).json({ message: 'Patient already exists' });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new patient instance
     const patient = new patientModel({
       name,
       email,
       password: hashedPassword,
     });
 
-    // Save the patient to the database
     await patient.save();
 
     res.status(201).json({ message: 'Patient registered successfully!' });
@@ -40,7 +36,7 @@ const registerPatient = async (req, res) => {
   }
 };
 
-//authentication is missing
+
 const login = async (req, res) => {
   const {name, email, password} = req.body;
   try {
@@ -70,19 +66,6 @@ const login = async (req, res) => {
   }
 }
 
-// Get patient by ID
-// const getPatient = async (req, res) => {
-//   try {
-//     const patient = await Patient.findById(req.params.id);
-//     if (!patient) {
-//       return res.status(404).json({ message: 'Patient not found' });
-//     }
-//     res.status(200).json(patient);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error', error });
-//   }
-// };
 
 const book = async (req,res) => {
   const {patient, doctor, appointmentDate, reson} = req.body;

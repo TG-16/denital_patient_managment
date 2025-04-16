@@ -15,15 +15,15 @@ const appointmentSchema = new mongoose.Schema({
     required: true
   },
   notes: {
-    type: String,  // Additional notes or comments about the appointment
+    type: String,  //diagnostics
     default: ''
   },
   prescription: {
-    type: String,  // Prescription details provided by the doctor
+    type: String,  
     default: ''
   },
   case: {
-    type: String,  // Medical case details
+    type: String,  // Medical case detail
     default: 'other'
   },
   rating: {

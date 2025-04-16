@@ -45,11 +45,19 @@ const dashboardValidator = (req) => {
     return true;
 }
 
+const deleteValidator = (req) => {
+    const {name, role} = req.body;
+    if(!name || !role)
+        return false;
+    return true;
+}
+
 module.exports = {
     inputValidator,
     bookingValidator,
     historyValidator,
     ratingValidator,
     saveValidator,
-    dashboardValidator
+    dashboardValidator,
+    deleteValidator
 }

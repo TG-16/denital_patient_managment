@@ -5,12 +5,12 @@ const validator = require("../utils/validator");
 const patientModel = require("../models/patient");
 const appointmentModel = require('../models/appointment');
 
-// Register a new doctor
+
 const registerDoctor = async (req, res) => {
   const { name, email, password, specialization } = req.body;
 
   try {
-    // Check if the patient already exists
+    
     let existingDoctor;
     if(!email)
       existingDoctor = await doctorModel.findOne({ name });
@@ -20,10 +20,8 @@ const registerDoctor = async (req, res) => {
       return res.status(400).json({ message: 'Doctor already exists' });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new patient instance
     const doctor = new doctorModel({
       name,
       email,
@@ -31,7 +29,6 @@ const registerDoctor = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Save the patient to the database
     await doctor.save();
 
     res.status(201).json({ message: 'Doctor registered successfully!' });
