@@ -7,7 +7,7 @@ const appointmentModel = require('../models/appointment');
 
 
 const registerDoctor = async (req, res) => {
-  const { name, email, password, specialization } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     
@@ -25,7 +25,6 @@ const registerDoctor = async (req, res) => {
     const doctor = new doctorModel({
       name,
       email,
-      specialization,
       password: hashedPassword,
     });
 
@@ -39,7 +38,7 @@ const registerDoctor = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const {name, email, password} = req.body;
+  const { email, password} = req.body;
   try {
     const valid = validator.inputValidator(req);
     if(!valid)
@@ -118,7 +117,7 @@ const  dashboard = async (req, res) => {
       return res.status(400).json({message: "input fields can't be empty"});
     
     const dailyAppointments = await dailyPatientList(doctor);
-    const weeklyAppointments = await weeklyPerformance(doctor);
+    const weeklyAppointments = await weeklyPerformance(doctor); //weekly performace
     const experience = await experianceReport(doctor);
     const dashboardData = {
       dailyAppointments,
@@ -182,7 +181,7 @@ const weeklyPerformance = async (doctorName) => {
       }
     });
     const averageRating = count > 0 ? (totalRating / count).toFixed(2) : 0;
-    return { filteredAppointments, averageRating };
+    return { averageRating };
   } catch (error) {
     console.error(error);
     return { message: 'Server error', error };
@@ -211,7 +210,25 @@ const experianceReport = async (doctorName) => {
 
    
 
+const dailyAppointment = async (req, res) => {
+  try {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
+    const appointments = await appointmentModel.find({
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (!appointments || appointments.length === 0) 
+      return res.status(404).json({ message: 'No appointments found for today' });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
 
 module.exports = {
   registerDoctor,
@@ -219,4 +236,5 @@ module.exports = {
   search,
   savHistory,
   dashboard,
+  dailyAppointment,
 };

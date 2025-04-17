@@ -9,7 +9,7 @@ const doctorSchema = new mongoose.Schema({
   },
   specialization: {
     type: String,
-    required: [true, 'Specialization is required'],
+    required: [false, 'Specialization is required'],
     trim: true
   },
   phone: {

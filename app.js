@@ -22,7 +22,7 @@ app.use(express.json());
 app.use('/api', indexRoute);
 app.use('/api/patients', patientRoutes);
 app.use('/api/reception', receptionRoutes); 
-app.use('/api/doctors', doctorRoutes); 
+app.use('/api/doctor', doctorRoutes); 
 app.use('/api/admin', adminRoute);
 
 // Start the server

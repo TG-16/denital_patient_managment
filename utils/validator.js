@@ -1,7 +1,7 @@
 
 const inputValidator = (req) => {
-    const {name, email, password} = req.body;
-    if(!name || !email || !password)
+    const { email, password} = req.body;
+    if(!email || !password)
         return false;
     return true;
 }

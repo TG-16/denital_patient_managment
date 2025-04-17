@@ -88,9 +88,9 @@ const deleteUser = async (req,res) => {
                     res.status(200).json({ message: 'Deleted successfully!' });
                     break;
                 case 'reception':
-                    const appointment = await appointmentModel.findOneAndDelete({name});
-                    if(!appointment)
-                      return res.status(404).json({message: "Appointment not found"});
+                    const reception = await receptionModel.findOneAndDelete({name});
+                    if(!reception)
+                      return res.status(404).json({message: "reception not found"});
                     res.status(200).json({ message: 'Deleted successfully!' });
                     break;
                 default:
@@ -105,7 +105,7 @@ const deleteUser = async (req,res) => {
 }
 
 const login = async (req, res) => {
-  const {name, email, password} = req.body;
+  const {email, password} = req.body;
   try {
     const valid = validator.inputValidator(req);
     if(!valid)

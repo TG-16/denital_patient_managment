@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controllers/adminControler');
+const adminController = require('../controllers/adminController');
 
-router.get("/todaysAppointments", adminController.todaysAppointments);
+//ruth
 router.delete("/delete", adminController.deleteUser);
 router.get("/getDoctors", adminController.getDoctors);
 router.get("/getPatients", adminController.getPatients);
 router.get("/getReceptions", adminController.getReceptions);
+
+//hebron's work
 router.post("/login", adminController.login);
 
 

@@ -38,7 +38,7 @@ const registerPatient = async (req, res) => {
 
 
 const login = async (req, res) => {
-  const {name, email, password} = req.body;
+  const {email, password} = req.body;
   try {
     const valid = validator.inputValidator(req);
     if(!valid)
@@ -49,11 +49,13 @@ const login = async (req, res) => {
     {
       const patient = await patientModel.findOne({email});
       if(patient)
-      {
+      {                 
         const passwordCheck = await bcrypt.compare(password, patient.password);
         if(passwordCheck)
         {
-          return res.status(201).json({message: `welcome ${patient.name} Id: ${patient._id}`});
+          patient = patient.toObject();
+          delete patient.password;
+          return res.status(201).json({patient});
         }
         return res.status(400).json({message: "Password doesnt match"});
       }

@@ -37,7 +37,7 @@ const registerReception = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const {name, email, password} = req.body;
+  const {email, password} = req.body;
   try {
     const valid = validator.inputValidator(req);
     if(!valid)
@@ -140,10 +140,32 @@ const todaysAppointments = async (req, res) => {
   }
 };
 
+const getDoctors = async (req,res) => {
+  try {
+    const doctors = await doctorModel.find({});
+    if(doctors.length === 0)
+      return res.status(404).json({message: "No doctors found"});
+    
+    const sortedDoctors = doctors.map(doctor => {
+        doctor = doctor.toObject(); // Convert Mongoose document to plain object
+        delete doctor.password;
+        delete doctor.ratings;
+        return doctor;
+    });
+
+    sortedDoctors.sort((a,b) => b.averageRating - a.averageRating);
+    res.status(200).json(sortedDoctors);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Server error", error});
+  }
+}
+
 module.exports = {
   registerReception,
   book,
   cancel,
   todaysAppointments,
-  login
+  login,
+  getDoctors
 };
